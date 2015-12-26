@@ -58,7 +58,7 @@ class AliPay implements PayInterface
     public function createPay($order_sn, $price, $params)
     {
         //发起支付
-        $this->initiatePayment($this->mergePayParams($order_sn, $price, $params['subject'], $params['body']));
+        $this->initiatePayment($this->mergePayParams($order_sn, $price, $params['subject'], isset($params['body']) ? $params['body'] : ""));
     }
 
     /**
