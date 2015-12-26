@@ -11,10 +11,13 @@
 namespace Yangyifan\Pay\Http\Requests;
 
 use App\Http\Requests\Request;
-use App\Http\Controllers\BaseController;//需要修改这里
+use Illuminate\Http\Response;
 
 class BaseFormRequest extends Request
 {
+
+    const ERROR_STATE_CODE      = 1;
+    const SUCCESS_STATE_CODE    = 0;
 
     /**
 	 * Determine if the user is authorized to make this request.
@@ -47,7 +50,23 @@ class BaseFormRequest extends Request
     {
         $errors = array_values($errors);
 
-        return (new BaseController())->response($code = BaseController::ERROR_STATE_CODE, $errors[0][0], $data = [], $target = false, $href = '');
+        return (new Response($this->responseContent(self::ERROR_STATE_CODE, $errors[0][0], $data = [], $target = false, $href = ''), 200));
+    }
+
+    /**
+     * 获得 响应内容
+     *
+     * @param int $code
+     * @param string $msg
+     * @param array $data
+     * @param bool|true $target
+     * @param string $href
+     * @return string
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    public function responseContent($code = self::SUCCESS_STATE_CODE, $msg = '', $data = [], $target = true, $href = '')
+    {
+        return json_encode(compact('code', 'msg', 'data', 'target', 'href'));
     }
 
 }
