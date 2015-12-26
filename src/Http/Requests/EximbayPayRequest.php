@@ -10,8 +10,6 @@
 
 namespace Yangyifan\Pay\Http\Requests;
 
-use App\Http\Requests\BaseFormRequest;
-
 class EximbayPayRequest extends BaseFormRequest
 {
 

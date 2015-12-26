@@ -22,7 +22,7 @@ class PayServiceProvider extends ServiceProvider
      * @var bool
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    protected $defer = false;
+    protected $defer = true;
 
     /**
      * 执行注册后的启动服务。
@@ -31,8 +31,8 @@ class PayServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //发布路由
-        $this->setupRoutes($this->app->router);
+        //发布路由,暂时不需要设置路由
+        //$this->setupRoutes($this->app->router);
         //发布配置文件
         $this->setConfig();
     }
@@ -43,7 +43,7 @@ class PayServiceProvider extends ServiceProvider
      * @return void
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    public function setupRoutes(Router $router)
+    private function setupRoutes(Router $router)
     {
         $router->group(['namespace' => 'Yangyifan\Pay\Http\Controllers'], function($router)
         {
@@ -58,7 +58,7 @@ class PayServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('pay', function($app){
+        $this->app->bind('pay', function($app){
             return new \Yangyifan\Pay\Pay($app);
         });
     }
@@ -71,13 +71,15 @@ class PayServiceProvider extends ServiceProvider
     private function setConfig()
     {
         // 发布config配置文件
-        $this->publishes([
-            realpath(__DIR__.'/config/pay.php') => config_path('pay.php'),
-        ]);
-
-        $this->mergeConfigFrom(
-            realpath(__DIR__.'/config/pay.php'), 'pay'
-        );
+        if ( file_exists(config_path('pay.php'))) {
+            $this->mergeConfigFrom(
+                realpath(__DIR__.'/config/pay.php'), 'pay'
+            );
+        } else {
+            $this->publishes([
+                realpath(__DIR__.'/config/pay.php') => config_path('pay.php'),
+            ]);
+        }
     }
 
 }
