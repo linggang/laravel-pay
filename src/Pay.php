@@ -38,4 +38,26 @@ class Pay{
     {
         $this->pay->createPay($order_sn, $price, $params);
     }
+
+    /**
+     * 验证同步支付是否合法
+     *
+     * @return mixed
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    public function verifyReturn()
+    {
+        return $this->pay->verifyReturn();
+    }
+
+    /**
+     * 验证异步支付是否合法
+     *
+     * @return mixed
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    public function verifyNotify()
+    {
+        return $this->pay->verifyNotify();
+    }
 }
