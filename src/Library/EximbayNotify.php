@@ -41,7 +41,7 @@ class EximbayNotify
 //            return true;
 //        }
         \Log::error('EximbayNotify error:' . $rescode . ',' . json_encode($request->all()));
-//        return false;
+       return true;
     }
 
     /**
