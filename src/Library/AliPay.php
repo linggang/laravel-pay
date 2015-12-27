@@ -110,4 +110,26 @@ class AliPay implements PayInterface
         echo ( new AlipaySubmit($this->config) )->buildRequestForm($param, "get", "确认");
     }
 
+    /**
+     * 验证支付宝同步支付是否合法
+     *
+     * @return 验证结果
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    public function verifyReturn()
+    {
+        return ( new AlipayNotify($this->config) )->verifyReturn();
+    }
+
+    /**
+     * 验证支付宝异步支付是否合法
+     *
+     * @return 验证结果
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    public function verifyNotify()
+    {
+        return ( new AlipayNotify($this->config) )->verifyNotify();
+    }
+
 }

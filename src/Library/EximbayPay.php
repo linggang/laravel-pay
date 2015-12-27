@@ -135,6 +135,28 @@ class EximbayPay implements PayInterface
         echo ( new EximbaySubmit($this->config) )->buildRequestForm($param, "post", "确认");
     }
 
+    /**
+     * 验证 EximbayPay 同步支付是否合法
+     *
+     * @return 验证结果
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    public function verifyReturn()
+    {
+        return ( new EximbayNotify() )->verifyReturn();
+    }
+
+    /**
+     * 验证 EximbayPay 异步支付是否合法
+     *
+     * @return 验证结果
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    public function verifyNotify()
+    {
+        return ( new EximbayNotify() )->verifyNotify();
+    }
+
 
 
 }
