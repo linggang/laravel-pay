@@ -1,0 +1,22 @@
+{
+    "name": "yangyifan/laravel-pay",
+    "description": "laravel支付插件",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Yang Yifan",
+            "email": "yangyifanphp@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Yangyifan\\Pay\\":"src/"
+        },
+        "files": [
+            "alipay/lib/alipay_core.function.php",
+            "alipay/lib/alipay_md5.function.php"
+        ]
+    }
+
+}
