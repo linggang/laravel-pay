@@ -58,7 +58,7 @@ class PayServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('pay', function($app){
+        $this->app->singleton('pay', function($app){
             return new \Yangyifan\Pay\Pay($app);
         });
     }
@@ -77,7 +77,7 @@ class PayServiceProvider extends ServiceProvider
             );
         } else {
             $this->publishes([
-                realpath(__DIR__.'/config/pay.php') => config_path('pay.php'),
+                realpath(__DIR__.'/config/pay.php') => base_path('/config/pay.php'),
             ]);
         }
     }
