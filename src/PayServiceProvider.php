@@ -11,11 +11,9 @@
 namespace Yangyifan\Pay;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Routing\Router;
 
 class PayServiceProvider extends ServiceProvider
 {
-
     /**
      * 定义延迟加载
      *
@@ -31,24 +29,8 @@ class PayServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //发布路由,暂时不需要设置路由
-        //$this->setupRoutes($this->app->router);
         //发布配置文件
         $this->setConfig();
-    }
-
-    /**
-     * 设置路由
-     *
-     * @return void
-     * @author yangyifan <yangyifanphp@gmail.com>
-     */
-    private function setupRoutes(Router $router)
-    {
-        $router->group(['namespace' => 'Yangyifan\Pay\Http\Controllers'], function($router)
-        {
-            require __DIR__.'/Http/routes.php';
-        });
     }
 
     /**
@@ -58,8 +40,8 @@ class PayServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('pay', function($app){
-            return new \Yangyifan\Pay\Pay($app);
+        $this->app->bind('pay', function($app){
+            return new Pay($app);
         });
     }
 

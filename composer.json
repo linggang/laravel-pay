@@ -1,6 +1,7 @@
 {
     "name": "yangyifan/laravel-pay",
     "description": "laravel支付插件",
+    "keywords"        : ["tyua07", "yangyifan", "laravel", "sdk", "pay", "alipay", "eximbay"],
     "license": "MIT",
     "authors": [
         {
