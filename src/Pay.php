@@ -96,7 +96,7 @@ class Pay{
      */
     protected function getPay()
     {
-        if ( !is_null($this->pay) ) {
+        if ( !is_null($this->pay) && $this->pay instanceof PayInterface ) {
             return $this->pay;
         }
         //设置支付对象
