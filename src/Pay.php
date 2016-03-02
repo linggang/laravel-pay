@@ -14,95 +14,98 @@ use Yangyifan\Pay\Library\AliPay;
 use Yangyifan\Pay\Library\EximbayPay;
 use InvalidArgumentException;
 
-class Pay{
-
+class Pay
+{
     /**
      * 支付方式
+     *
+     * @var array
+     */
+    protected $pay_method = [];
+
+    /**
+     * app 实例
      *
      * @var object
      */
-    private $pay = null;
-
-    /**
-     * 支付方式
-     *
-     * @var string
-     */
-    private $pay_method;
+    protected $app;
 
     /**
      * 构造方法
      *
-     * @param $pay_method 支付方式
+     * @param $app app实例
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    public function __construct($pay_method = '')
+    public function __construct($app)
     {
-        //设置支付方式
-        !empty($pay_method) && $this->pay_method = $pay_method;
-
-        return $this;
+        $this->app = $app;
     }
 
     /**
-     * 获得当前支付方式
+     * 支付方式
      *
-     * @return string
+     * @param null $name
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    public function getPayMethod()
+    public function drive($name = null)
     {
-        return $this->pay_method;
-    }
-
-    /**
-     * 设置支付方式
-     *
-     * @param $pay_method
-     * @return $this
-     * @author yangyifan <yangyifanphp@gmail.com>
-     */
-    public function setPayMethod($pay_method)
-    {
-        $this->pay_method = $pay_method;
-        return $this;
-    }
-
-    /**
-     * 实例化支付对象
-     *
-     * @return string
-     * @author yangyifan <yangyifanphp@gmail.com>
-     */
-    protected function setPay()
-    {
-        //创建实例
-        $pay_method = "create" . ucfirst(strtolower($this->pay_method));
-
-        if ( method_exists($this, $pay_method)) {
-            $this->pay = $this->{$pay_method}();
-        } else {
-            throw new InvalidArgumentException(" [{$pay_method}] 支付方式不存在.");
-        }
-
-        return $this;
+        return $this->pay($name);
     }
 
     /**
      * 获得支付对象
      *
-     * @return $this|object
+     * @param null $name
+     * @return object
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    protected function getPay()
+    public function pay($name = null)
     {
-        if ( !is_null($this->pay) && $this->pay instanceof PayInterface ) {
-            return $this->pay;
+        //支付方式
+        $name = $name ?: $this->getDefaultName();
+
+        return $this->pay_method[$name] = $this->get($name);
+    }
+
+    /**
+     * 获得当前支付对象
+     *
+     * @return object
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    protected function get($name = null)
+    {
+        return isset($this->pay_method[$name]) ? $this->pay_method[$name] : $this->resolve($name);
+    }
+
+    /**
+     * 设置支付对象
+     *
+     * @param $name
+     * @return mixed
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    protected function resolve($name)
+    {
+        $driver = "create" . ucfirst(strtolower($name)) . "Driver";
+
+        if ( method_exists($this, $driver)) {
+            return $this->$driver();
+        } else {
+            throw new InvalidArgumentException(" [{$driver}] 支付方式不存在.");
         }
-        //设置支付对象
-        $this->setPay();
-        //返回支付对象
-        return $this->pay;
+    }
+
+    /**
+     * 实现支付适配器
+     *
+     * @param PayInterface $pay
+     * @return PayAdapter
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    protected function adapt(PayInterface $pay)
+    {
+        return new PayAdapter($pay);
     }
 
     /**
@@ -110,9 +113,11 @@ class Pay{
      *
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    protected function createAlipay()
+    protected function createAlipayDriver()
     {
-        return new AliPay();
+        return $this->adapt(
+            new AliPay()
+        );
     }
 
     /**
@@ -120,43 +125,34 @@ class Pay{
      *
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    protected function createEximbayPay()
+    protected function createEximbayDriver()
     {
-        return new EximbayPay();
+        return $this->adapt(
+            new EximbayPay()
+        );
     }
 
     /**
-     * 发起支付
-     *
-     * @param $order_sn 订单编号
-     * @param $price    支付金额
-     * @param $params   全部参数
-     * @author yangyifan <yangyifanphp@gmail.com>
-     */
-    public function createPay($order_sn, $price, $params)
-    {
-        $this->getPay()->createPay($order_sn, $price, $params);
-    }
-
-    /**
-     * 验证同步支付是否合法
+     * 获得默认支付方式
      *
      * @return mixed
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    public function verifyReturn()
+    protected function getDefaultName()
     {
-        return $this->getPay()->verifyReturn();
+        return $this->app['config']['pay.default'];
     }
 
     /**
-     * 验证异步支付是否合法
+     * __call 魔术方法
      *
+     * @param $name
+     * @param $arguments
      * @return mixed
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    public function verifyNotify()
+    public function __call($name, $arguments)
     {
-        return $this->getPay()->verifyNotify();
+        return call_user_func_array([$this->pay(), $name], $arguments);
     }
 }

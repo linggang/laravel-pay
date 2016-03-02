@@ -10,8 +10,8 @@
 
 namespace Yangyifan\Pay;
 
-interface PayInterface{
-
+interface PayInterface
+{
     /**
      * 创建支付
      *

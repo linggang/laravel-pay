@@ -10,10 +10,8 @@
 
 namespace Yangyifan\Pay\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\BaseController;
-//use Yangyifan\Pay\Pay;
 use Yangyifan\Pay\Http\Requests\AliPayRequest;
 use Yangyifan\Pay\Http\Requests\EximbayPayRequest;
 use pay;
@@ -40,8 +38,7 @@ class PayController extends BaseController
     {
         $data = $request->all();
         //发起支付
-        //( new Pay('AliPay') )->createPay($data['order_sn'], $data['price'], $data);
-        Pay::setPayMethod('alipay')->createPay($data['order_sn'], $data['price'], $data);
+        Pay::drive('alipay')->createPay($data['order_sn'], $data['price'], $data);
     }
 
     /**
@@ -53,6 +50,6 @@ class PayController extends BaseController
     {
         $data = $request->all();
         //发起支付
-        //( new Pay('EximbayPay') )->createPay($data['order_sn'], $data['price'], $data);
+        Pay::drive('EximbayPay')->createPay($data['order_sn'], $data['price'], $data);
     }
 }

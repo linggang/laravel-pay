@@ -40,8 +40,8 @@ class PayServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('pay', function(){
-            return new Pay();
+        $this->app->bind('pay', function($app){
+            return new Pay($app);
         });
     }
 
