@@ -22,7 +22,6 @@
 
 ```
 use Yangyifan\Pay\Pay;
-use Yangyifan\Pay\Library\AliPay;
 use Yangyifan\Pay\Http\Requests\AliPayRequest;
 
 /**
@@ -45,7 +44,6 @@ public function alipay(AliPayRequest $request)
 
 ```
 use Yangyifan\Pay\Pay;
-use Yangyifan\Pay\Library\EximbayPay;
 use Yangyifan\Pay\Http\Requests\EximbayPayRequest;
 
 /**

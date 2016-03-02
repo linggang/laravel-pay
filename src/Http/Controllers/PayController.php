@@ -14,8 +14,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\BaseController;
 //use Yangyifan\Pay\Pay;
-use Yangyifan\Pay\Library\AliPay;
-use Yangyifan\Pay\Library\EximbayPay;
 use Yangyifan\Pay\Http\Requests\AliPayRequest;
 use Yangyifan\Pay\Http\Requests\EximbayPayRequest;
 use pay;
