@@ -20,7 +20,7 @@ class PayServiceProvider extends ServiceProvider
      * @var bool
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    protected $defer = true;
+    protected $defer = false;
 
     /**
      * 执行注册后的启动服务。
