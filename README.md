@@ -4,7 +4,9 @@
 * 执行 ``` php composer update -vvv yangyifan/laravel-pay ``` 注意 ```php``` 必须定位到您本机安装的php目录下面的bin目录下面的php路径
 * 更新完毕执行 ``` php artisan vendor:publish ``` 
 * 在 ``` config/app.php ``` 加入 ``` 'Yangyifan\Pay\PayServiceProvider' ```
-* 在 ``` config\pay ``` 文件自定义自己的参数
+* 在 ``` config\app.php ``` 加入 ``` 'Pay'       => Yangyifan\Pay\Facades\Pay::class ```
+* 在 ``` config\pay.php ``` 文件自定义自己的参数
+
 
 ### 支持
 
