@@ -21,7 +21,7 @@
 * 发起 支付宝 支付
 
 ```
-use Yangyifan\Pay\Pay;
+use Pay;
 use Yangyifan\Pay\Http\Requests\AliPayRequest;
 
 /**
@@ -33,9 +33,7 @@ public function alipay(AliPayRequest $request)
 {
     $data = $request->all();
     //发起支付
-    ( new Pay('AliPay') )->createPay($data['order_sn'], $data['price'], $data);
-    或者
-    Pay::setPayMethod('alipay')->createPay($data['order_sn'], $data['price'], $data);
+    Pay::createPay($data['order_sn'], $data['price'], $data);
 }
     
 ```
@@ -43,7 +41,7 @@ public function alipay(AliPayRequest $request)
 * 发起 Eximbay 支付
 
 ```
-use Yangyifan\Pay\Pay;
+use Pay;
 use Yangyifan\Pay\Http\Requests\EximbayPayRequest;
 
 /**
@@ -55,9 +53,7 @@ public function EximbayPay(EximbayPayRequest $request)
 {
     $data = $request->all();
     //发起支付
-    ( new Pay('EximbayPay') )->createPay($data['order_sn'], $data['price'], $data);
-    或者
-    Pay::setPayMethod('alipay')->createPay($data['order_sn'], $data['price'], $data);
+    Pay::drive('EximbayPay')->createPay($data['order_sn'], $data['price'], $data);
 }
 
 ```
@@ -68,11 +64,11 @@ public function EximbayPay(EximbayPayRequest $request)
 
 ```
 #验证异步支付是否合法
-( new Pay('AliPay') )->verifyReturn();
+Pay::verifyReturn();
 
 
 #验证异步支付是否合法
-( new Pay('AliPay') )->verifyNotify()
+Pay::verifyNotify()
 
 ```
 
@@ -80,10 +76,10 @@ public function EximbayPay(EximbayPayRequest $request)
 
 ```
 #验证异步支付是否合法
-( new Pay('EximbayPay') )->verifyReturn()
+Pay::drive('EximbayPay')->verifyReturn()
 
 #验证异步支付是否合法
-( new Pay('EximbayPay') )->verifyNotify()
+Pay::drive('EximbayPay')->verifyNotify()
 
 ```
 
@@ -91,8 +87,9 @@ public function EximbayPay(EximbayPayRequest $request)
 
 ```
 
-//支付宝合作信息
+    //支付宝合作信息
     'alipay' => [
+        'drive'         => 'alipay',//支付方式
         'partner'       => '',//合作身份者id，以2088开头的16位纯数字
         'key'           => '',
         'sign_type'     => '',//签名方式
@@ -109,6 +106,7 @@ public function EximbayPay(EximbayPayRequest $request)
 
     // eximbay 支付信息
     'eximbay' => [
+        'drive'         => 'eximbay',//支付方式
         'secretKey'     => '',
         'mid'           => '',
         'cur'           => '',//货币
@@ -121,9 +119,11 @@ public function EximbayPay(EximbayPayRequest $request)
 
     //Exmibay通知url
     'eximbay_url' => [
-        'returnurl' => "",//服务器异步通知页面路径
+        'returnurl' => '',//服务器异步通知页面路径
         'statusurl' => '',//页面跳转同步通知页面路径
     ],
+
+    'default'   => 'alipay',//默认支付方式
 
 ```
 
