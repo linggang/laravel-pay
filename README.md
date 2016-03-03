@@ -4,8 +4,8 @@
 * 执行 ``` php composer update -vvv yangyifan/laravel-pay ``` 注意 ```php``` 必须定位到您本机安装的php目录下面的bin目录下面的php路径
 * 更新完毕执行 ``` php artisan vendor:publish ``` 
 * 在 ``` config/app.php ``` 加入 ``` 'Yangyifan\Pay\PayServiceProvider' ```
-* 在 ``` config\app.php ``` 加入 ``` 'Pay'       => Yangyifan\Pay\Facades\Pay::class ```
-* 在 ``` config\pay.php ``` 文件自定义自己的参数
+* 在 ``` config/app.php ``` 加入 ``` 'Pay'       => Yangyifan\Pay\Facades\Pay::class ```
+* 在 ``` config/pay.php ``` 文件自定义自己的参数
 
 
 ### 支持
@@ -92,16 +92,14 @@ Pay::drive('EximbayPay')->verifyNotify()
         'drive'         => 'alipay',//支付方式
         'partner'       => '',//合作身份者id，以2088开头的16位纯数字
         'key'           => '',
-        'sign_type'     => '',//签名方式
+        'sign_type'     => 'md5',//签名方式
         'input_charset' => 'utf-8',//字符编码格式 目前支持 gbk 或 utf-8
         'transport'     => 'http',//访问模式,根据自己的服务器是否支持ssl访问，若支持请选择https；若不支持请选择http
         'cacert'        => '',//ca证书路径地址，用于curl中ssl校验
-    ],
-
-    //支付宝通知url
-    'alipay_url' => [
-        'notify_url' => '',//服务器异步通知页面路径
-        'return_url' => '',//页面跳转同步通知页面路径
+        'service'       => 'create_forex_trade',//服务
+        'currency'      => 'USD',//货币
+        'notify_url'    => '',//服务器异步通知页面路径
+        'return_url'    => '',//页面跳转同步通知页面路径
     ],
 
     // eximbay 支付信息
@@ -111,16 +109,13 @@ Pay::drive('EximbayPay')->verifyNotify()
         'mid'           => '',
         'cur'           => '',//货币
         'product_name'  => '',//项目名称
-        'lang'          => '',//语言
-        'charset'       => '',//字符集
+        'lang'          => 'CN',//语言
+        'charset'       => 'UTF-8',//字符集
         'ver'           => '',//版本
         'shop'          => '',
-    ],
-
-    //Exmibay通知url
-    'eximbay_url' => [
-        'returnurl' => '',//服务器异步通知页面路径
-        'statusurl' => '',//页面跳转同步通知页面路径
+        'type'          => '',//类型为销售
+        'returnurl'     => "",//服务器异步通知页面路径
+        'statusurl'     => '',//页面跳转同步通知页面路径
     ],
 
     'default'   => 'alipay',//默认支付方式
