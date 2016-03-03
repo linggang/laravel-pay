@@ -15,7 +15,7 @@ use Yangyifan\Pay\Library\EximbayPay;
 use InvalidArgumentException;
 use Closure;
 
-class Pay
+class PayManager
 {
     /**
      * 支付方式
