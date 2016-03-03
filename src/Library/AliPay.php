@@ -14,36 +14,22 @@ use Yangyifan\Pay\PayInterface;
 
 class AliPay implements PayInterface
 {
+    /**
+     * 配置信息
+     *
+     * @var array
+     */
     private $config;
-    private $notify_url;//服务器异步通知页面路径
-    private $return_url;//页面跳转同步通知页面路径
-    private $service    = 'create_forex_trade';
-    private $currency   = 'USD';//货币类型
 
     /**
      * 构造方法
      *
+     * param array $config 支付配置信息
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    public function __construct()
+    public function __construct($config)
     {
-        $this->config = $this->mergeAlipayConfig();
-    }
-
-    /**
-     * 组合支付宝配置信息
-     *
-     * @param $config
-     * @author yangyifan <yangyifanphp@gmail.com>
-     */
-    private function mergeAlipayConfig()
-    {
-        $config = config('pay.alipay');
-
-        if (!empty($config) && empty($config['cacert'])) {
-            $config['cacert'] = dirname(dirname(__DIR__)) . '/alipay/cacert.pem';
-        }
-        return $config;
+        $this->config = $config;
     }
 
     /**
@@ -58,7 +44,9 @@ class AliPay implements PayInterface
     public function createPay($order_sn, $price, $params)
     {
         //发起支付
-        $this->initiatePayment($this->mergePayParams($order_sn, $price, $params['subject'], isset($params['body']) ? $params['body'] : ""));
+        $this->initiatePayment(
+            $this->mergePayParams($order_sn, $price, $params['subject'], isset($params['body']) ? $params['body'] : "")
+        );
     }
 
     /**
@@ -75,9 +63,9 @@ class AliPay implements PayInterface
         //组合参数
         $param = [
             '_input_charset'    => $this->config['input_charset'],
-            'currency'          => $this->currency,
+            'currency'          => $this->config['currency'],
             'partner'           => $this->config['partner'],
-            'service'           => $this->service,
+            'service'           => $this->config['service'],
             'sign_type'         => $this->config['sign_type'],
             'body'              => empty($body) ? "" : $body,
             'out_trade_no'      => $order_sn,
@@ -86,14 +74,11 @@ class AliPay implements PayInterface
 
         ];
 
-        $this->notify_url   = config('pay.alipay_url.notify_url');
-        $this->return_url   = config('pay.alipay_url.return_url');
-
-        if(!empty($this->notify_url)){
-            $param['notify_url'] = $this->notify_url;
+        if(!empty($this->config['notify_url'])){
+            $param['notify_url'] = $this->config['notify_url'];
         }
-        if(!empty($this->return_url)) {
-            $param['return_url'] = $this->return_url;
+        if(!empty($this->config['return_url'])) {
+            $param['return_url'] = $this->config['return_url'];
         }
         return $param;
     }

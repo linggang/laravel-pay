@@ -14,29 +14,24 @@ use Yangyifan\Pay\PayInterface;
 
 class EximbayPay implements PayInterface
 {
-    public $config;
+    /**
+     * 配置信息
+     *
+     * @var array
+     */
+    private $config;
 
     const TYPE = 'SALE';//定义类型为销售
 
     /**
      * 构造方法
      *
+     * @param array $config
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    public function __construct()
+    public function __construct($config)
     {
-        $this->config = $this->mergeAlipayConfig();
-    }
-
-    /**
-     * 组合EximbayPay配置信息
-     *
-     * @param $config
-     * @author yangyifan <yangyifanphp@gmail.com>
-     */
-    private function mergeAlipayConfig()
-    {
-        return config('pay.eximbay');
+        $this->config = $config;
     }
 
     /**
@@ -52,7 +47,9 @@ class EximbayPay implements PayInterface
     public function createPay($order_sn, $price, $params)
     {
         //发起支付
-        $this->initiatePayment($this->mergePayParams($params['order_sn'], $params['price'], $params));
+        $this->initiatePayment(
+            $this->mergePayParams($params['order_sn'], $params['price'], $params)
+        );
     }
 
     /**
@@ -100,10 +97,10 @@ class EximbayPay implements PayInterface
             'dm_shipTo_firstName'   => $params['user_firstname'],//用户名
             'dm_shipTo_lastName'    => $params['user_lastname'],//用户姓
             'fgkey'                 => $this->sign($order_sn, $price_kr),//签名
-            'returnurl'             => config('pay.eximbay_url.returnurl'),//url 地址
-            'statusurl'             => config('pay.eximbay_url.statusurl'),//url地址
+            'returnurl'             => $this->config['returnurl'],//url 地址
+            'statusurl'             => $this->config['statusurl'],//url地址
             "ver"                   => $this->config['ver'],
-            "txntype"               => self::TYPE,//类型
+            "txntype"               => $this->config['tyep'],//类型
             "dm_shipTo_country"     => "US",
             "dm_shipTo_city"        => "NOTHING",
             "dm_shipTo_state"       => "NOTHING",

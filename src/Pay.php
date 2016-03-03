@@ -13,6 +13,7 @@ namespace Yangyifan\Pay;
 use Yangyifan\Pay\Library\AliPay;
 use Yangyifan\Pay\Library\EximbayPay;
 use InvalidArgumentException;
+use Closure;
 
 class Pay
 {
@@ -21,7 +22,7 @@ class Pay
      *
      * @var array
      */
-    protected $pay_method = [];
+    protected $drive = [];
 
     /**
      * app 实例
@@ -29,6 +30,13 @@ class Pay
      * @var object
      */
     protected $app;
+
+    /**
+     * 自定义扩展支付对象
+     *
+     * @var array
+     */
+    protected $customCreator = [];
 
     /**
      * 构造方法
@@ -64,7 +72,7 @@ class Pay
         //支付方式
         $name = $name ?: $this->getDefaultName();
 
-        return $this->pay_method[$name] = $this->get($name);
+        return $this->drive[$name] = $this->get($name);
     }
 
     /**
@@ -75,7 +83,7 @@ class Pay
      */
     protected function get($name = null)
     {
-        return isset($this->pay_method[$name]) ? $this->pay_method[$name] : $this->resolve($name);
+        return isset($this->drive[$name]) ? $this->drive[$name] : $this->resolve($name);
     }
 
     /**
@@ -87,13 +95,37 @@ class Pay
      */
     protected function resolve($name)
     {
+        //获得配置信息
+        $config = $this->getConfig($name);
+
+        if ( isset($this->customCreator[$name]) ) {
+            return $this->callCustomCreator($config);
+        }
+
         $driver = "create" . ucfirst(strtolower($name)) . "Driver";
 
         if ( method_exists($this, $driver)) {
-            return $this->$driver();
+            return $this->$driver($config);
         } else {
             throw new InvalidArgumentException(" [{$driver}] 支付方式不存在.");
         }
+    }
+
+    /**
+     * 使用自定义扩展支付
+     *
+     * @param $config
+     * @return PayAdapter
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    protected function callCustomCreator($config)
+    {
+        $drive = $this->customCreator[$config['drive']]($this->app, $config);
+
+        if ( $drive instanceof PayInterface ) {
+            return $this->adapt($drive);
+        }
+        return $drive;
     }
 
     /**
@@ -111,25 +143,59 @@ class Pay
     /**
      * 创建支付宝支付
      *
+     * @param array $config 支付配置信息
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    protected function createAlipayDriver()
+    protected function createAlipayDriver($config)
     {
+        //格式化支付信息
+        $alipay_config = $this->formatAlipayConfig($config);
+
         return $this->adapt(
-            new AliPay()
+            new AliPay($alipay_config)
         );
+    }
+
+    /**
+     * 格式化支付支付信息
+     *
+     * @param $config
+     * @return mixed
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    protected function formatAlipayConfig($config)
+    {
+        if (!empty($config) && empty($config['cacert'])) {
+            $config['cacert'] = dirname(__DIR__) . '/alipay/cacert.pem';
+        }
+        return $config;
     }
 
     /**
      * 创建Eximbay支付
      *
+     * @param array $config 支付配置信息
      * @author yangyifan <yangyifanphp@gmail.com>
      */
-    protected function createEximbayDriver()
+    protected function createEximbayDriver($config)
     {
         return $this->adapt(
-            new EximbayPay()
+            new EximbayPay($config)
         );
+    }
+
+    /**
+     * 获得支付配置信息
+     *
+     * @param $name
+     * @return mixed
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    protected function getConfig($name)
+    {
+        $name = strtolower($name);
+
+        return $this->app['config']["pay.{$name}"];
     }
 
     /**
@@ -141,6 +207,20 @@ class Pay
     protected function getDefaultName()
     {
         return $this->app['config']['pay.default'];
+    }
+
+    /**
+     * 自定义支付方式
+     *
+     * @param $drive
+     * @param Closure $callback
+     * @return $this
+     * @author yangyifan <yangyifanphp@gmail.com>
+     */
+    public function extend($drive, Closure $callback)
+    {
+        $this->customCreator[$drive] = $callback;
+        return $this;
     }
 
     /**
